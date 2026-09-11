@@ -28,6 +28,5 @@ export const MEDIA={
  'Was war ein Walkman ursprünglich vor allem?':{cat:'POP',img:C+'Walkman_TPS-L2.jpg?width=1100',alt:'Sony Walkman TPS-L2',credit:'Anna Gerdén / Tekniska museet · Wikimedia Commons'},
  'Welches Handy wurde für Snake II und seine Robustheit legendär?':{cat:'POP',img:C+'Nokia3310.jpg?width=900',alt:'Nokia 3310',credit:'Wikimedia Commons'},
  'Welche Konsole brachte Nintendo 2006 mit Bewegungssteuerung ins Wohnzimmer?':{cat:'GAMES',img:C+'Wii-console.jpg?width=1100',alt:'Nintendo Wii mit Wii Remote',credit:'Evan-Amos · Public Domain · Wikimedia Commons'},
- 'Welche Filmreihe begann 2001 mit einem Jungen, der nach Hogwarts kommt?':{...byQ['Welche Filmreihe begann 2001 mit einem Jungen, der nach Hogwarts kommt?'],img:C+'Sony-PlayStation-2-90001-Console-FL.jpg?width=1100',alt:'2000er-Technikmotiv',credit:'Evan-Amos · Public Domain · Wikimedia Commons'},
  'Welche Plattform machte kurze vertikale Videos endgültig zum Mainstream?':{cat:'POP',img:C+'IPhone_1st_Gen.svg?width=650',alt:'Frühes iPhone als Symbol für mobile Medien',credit:'Rafael Fernandez · CC BY-SA 4.0 · Wikimedia Commons'}
 };

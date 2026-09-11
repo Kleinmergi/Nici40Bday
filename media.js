@@ -1,4 +1,22 @@
 import { FLAT } from './quiz-data.js';
 const seen=new WeakSet();
-function enhance(){document.querySelectorAll('.stage,#playerView').forEach(root=>{const q=root.querySelector('.question');if(!q)return;const item=FLAT.find(x=>x.q===q.textContent.trim());if(!item)return;const eyebrow=root.querySelector('.eyebrow');if(eyebrow&&!eyebrow.querySelector('.catBadge'))eyebrow.insertAdjacentHTML('beforeend',` <span class="catBadge">${item.cat||'POP'}</span>`);const answer=root.querySelector('.answerBox');if(!answer||!item.yt||seen.has(answer))return;seen.add(answer);const card=document.createElement('div');card.className='mediaCard';card.innerHTML=`<div class="mediaKicker">▶ ORIGINAL-CLIP ZUR AUFLÖSUNG</div><div class="videoWrap"><iframe src="https://www.youtube-nocookie.com/embed/${item.yt}?rel=0" title="YouTube Clip" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;answer.after(card)})}
-new MutationObserver(enhance).observe(document.body,{childList:true,subtree:true});enhance();
+function enhance(){
+ document.querySelectorAll('.stage,#playerView').forEach(root=>{
+  const q=root.querySelector('.question'); if(!q)return;
+  const item=FLAT.find(x=>x.q===q.textContent.trim()); if(!item)return;
+  const eyebrow=root.querySelector('.eyebrow');
+  if(eyebrow&&!eyebrow.querySelector('.catBadge'))eyebrow.insertAdjacentHTML('beforeend',` <span class="catBadge">${item.cat||'POP'}</span>`);
+  if(seen.has(q))return; seen.add(q);
+  if(item.img){
+   const figure=document.createElement('figure'); figure.className='questionMedia';
+   figure.innerHTML=`<img src="${item.img}" alt="${item.alt||''}" loading="eager"><figcaption>${item.credit||''}</figcaption>`;
+   q.after(figure);
+  }
+  if(item.audio){
+   const audio=document.createElement('div'); audio.className='audioCard';
+   audio.innerHTML=`<div class="mediaKicker">♫ AUDIO-RÄTSEL</div><audio controls preload="metadata" src="${item.audio}"></audio>`;
+   (root.querySelector('.questionMedia')||q).after(audio);
+  }
+ });
+}
+new MutationObserver(enhance).observe(document.body,{childList:true,subtree:true}); enhance();

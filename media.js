@@ -6,7 +6,10 @@ async function getAudio(key){try{const db=await dbOpen();return await new Promis
 function stopAudio(){if(activeAudio){activeAudio.pause();if(activeAudio.dataset.objectUrl)URL.revokeObjectURL(activeAudio.dataset.objectUrl);activeAudio=null}}
 async function enhance(){
  const root=document.querySelector('#hostQuestion'); if(!root)return;
- const q=root.querySelector('.question'); if(!q){stopAudio();return}
+ const q=root.querySelector('.question');
+ const revealing=!!root.querySelector('.reviewCount,.opt.correct');
+ root.classList.toggle('hostMediaOnly',!!q&&!revealing);
+ if(!q){stopAudio();return}
  const cfg=MEDIA[q.textContent.trim()]; if(!cfg)return;
  const eyebrow=root.querySelector('.eyebrow'); if(eyebrow&&!eyebrow.querySelector('.catBadge'))eyebrow.insertAdjacentHTML('beforeend',` <span class="catBadge">${cfg.cat||'POP'}</span>`);
  if(seen.has(q))return; seen.add(q); stopAudio();

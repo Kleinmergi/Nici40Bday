@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { WebSocketServer } from 'ws';
-const ROUND_LENGTHS=[3,3,3,3,3],ANSWERS=[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0];
+const ROUND_LENGTHS=[8,8,8,8,8];
+const ANSWERS=[1,1,3,0,2,1,3,0,2,1,3,0,2,1,3,0,2,1,3,0,2,1,3,0,2,1,3,0,2,1,3,0,2,1,3,0,2,1,3,0];
 function flatIndex(ri,qi){let n=qi;for(let i=0;i<ri;i++)n+=ROUND_LENGTHS[i]||0;return n}function coords(i){let r=0;while(i>=ROUND_LENGTHS[r]){i-=ROUND_LENGTHS[r];r++}return{roundIndex:r,questionIndex:i}}
 const rooms=globalThis.__partyQuizRooms??new Map();globalThis.__partyQuizRooms=rooms;
 function code(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<5;i++)o+=a[Math.floor(Math.random()*a.length)];return o}function id(){return Math.random().toString(36).slice(2,10)}function safeName(v,f='Team'){return String(v||f).replace(/[<>]/g,'').trim().slice(0,28)||f}function send(ws,type,payload={}){if(ws.readyState===1)ws.send(JSON.stringify({type,...payload}))}function currentFlatIndex(r){return flatIndex(r.roundIndex,r.questionIndex)}

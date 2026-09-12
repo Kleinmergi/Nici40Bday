@@ -10,7 +10,8 @@ async function enhance(){
  const revealing=!!root.querySelector('.reviewCount,.opt.correct');
  root.classList.toggle('hostMediaOnly',!!q&&!revealing);
  if(!q){stopAudio();return}
- const cfg=MEDIA[q.textContent.trim()]; if(!cfg)return;
+ const mediaKey=q.dataset.mediaKey||q.textContent.trim();
+ const cfg=MEDIA[mediaKey]; if(!cfg)return;
  const eyebrow=root.querySelector('.eyebrow'); if(eyebrow&&!eyebrow.querySelector('.catBadge'))eyebrow.insertAdjacentHTML('beforeend',` <span class="catBadge">${cfg.cat||'POP'}</span>`);
  if(seen.has(q))return; seen.add(q); stopAudio();
  if(cfg.img){const f=document.createElement('figure');f.className='questionMedia';f.innerHTML=`<img src="${cfg.img}" alt="${cfg.alt||''}" loading="eager"><figcaption>${cfg.credit||''}</figcaption>`;q.after(f)}

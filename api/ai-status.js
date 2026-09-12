@@ -12,7 +12,8 @@ export default async function handler(req,res){
       body:JSON.stringify({
         model,
         store:false,
-        max_output_tokens:8,
+        reasoning:{effort:'none'},
+        max_output_tokens:16,
         input:'Antworte ausschließlich mit OK.'
       })
     });

@@ -1,0 +1,22 @@
+export const TEXT_CONFIG={
+'Wer sang 1984 „Wake Me Up Before You Go-Go“?':{canonical:'Wham!',accept:['wham','wham!']},
+'Welcher Film schickte Marty McFly 1985 zurück ins Jahr 1955?':{canonical:'Zurück in die Zukunft / Back to the Future',accept:['zurück in die zukunft','zurueck in die zukunft','back to the future','bttf']},
+'Welches Musikvideo zeigt a-ha in einer Mischung aus Realfilm und Bleistift-Comic?':{canonical:'Take on Me',accept:['take on me','takeonme']},
+'Welche Sängerin erklärte 1984, sie sei „Like a Virgin“?':{canonical:'Madonna',accept:['madonna']},
+'Welche Action-Komödie von 1984 fragte sinngemäß: Wen wirst du rufen?':{canonical:'Ghostbusters',accept:['ghostbusters','ghost busters']},
+'Welche Girlgroup wollte 1996 wissen: „Tell me what you want, what you really really want“?':{canonical:'Spice Girls',accept:['spice girls','spicegirls']},
+'Wer veröffentlichte 1991 „Smells Like Teen Spirit“?':{canonical:'Nirvana',accept:['nirvana']},
+'Welcher Film machte 1997 den Satz „I’m the king of the world!“ berühmt?':{canonical:'Titanic',accept:['titanic']},
+'Welche Boyband hatte Hits wie „Everybody (Backstreet’s Back)“?':{canonical:'Backstreet Boys',accept:['backstreet boys','backstreetboys','bsb']},
+'Wer sang 2003 „Crazy in Love“ zusammen mit Jay-Z?':{canonical:'Beyoncé',accept:['beyonce','beyoncé']},
+'Welche Sängerin veröffentlichte 2007 „Umbrella“?':{canonical:'Rihanna',accept:['rihanna']},
+'Welche Filmreihe begann 2001 mit einem Jungen, der nach Hogwarts kommt?':{canonical:'Harry Potter',accept:['harry potter','harrypotter']},
+'Welche Band fragte 2003: „Where Is the Love?“':{canonical:'The Black Eyed Peas',accept:['black eyed peas','the black eyed peas','blackeyedpeas']},
+'Welcher Song wurde 2012 mit Pferdetanz und Milliarden Views zum globalen Meme?':{canonical:'Gangnam Style',accept:['gangnam style','gangnamstyle']},
+'Wer veröffentlichte 2011 „Rolling in the Deep“ als Single-Hit?':{canonical:'Adele',accept:['adele']},
+'Welche Fantasyserie machte „Winter is coming“ zum geflügelten Satz?':{canonical:'Game of Thrones',accept:['game of thrones','got']},
+'Welcher Künstler sang 2014 „Happy“?':{canonical:'Pharrell Williams',accept:['pharrell williams','pharrell']},
+'Wer veröffentlichte 2020 den Hit „Blinding Lights“?':{canonical:'The Weeknd',accept:['the weeknd','weeknd']},
+'Welche Sängerin landete 2023 mit „Flowers“ einen weltweiten Hit?':{canonical:'Miley Cyrus',accept:['miley cyrus','miley']},
+'Welcher Song aus „Encanto“ wurde 2022 zum überraschenden Chart-Hit?':{canonical:'We Don’t Talk About Bruno',accept:['we dont talk about bruno','we don’t talk about bruno','dont talk about bruno','bruno']}
+};

@@ -1,4 +1,5 @@
 import { AUDIO_UPLOADS } from './media-config.js';
+import { upload } from 'https://esm.sh/@vercel/blob@2.6.1/client';
 const list=document.querySelector('#audioList');let serverAudio={};
 const dbOpen=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('nici40-media',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('audio'))r.result.createObjectStore('audio')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 const localGet=async key=>{const db=await dbOpen();return new Promise((resolve,reject)=>{const r=db.transaction('audio','readonly').objectStore('audio').get(key);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})};
@@ -7,11 +8,14 @@ const localDel=async key=>{const db=await dbOpen();return new Promise((resolve,r
 async function refreshServer(){try{const r=await fetch('/api/audio-library',{cache:'no-store'});const x=await r.json();serverAudio=x.audio||{}}catch{serverAudio={}}}
 async function removeServer(key){const r=await fetch('/api/audio-library?key='+encodeURIComponent(key),{method:'DELETE'});if(!r.ok)throw new Error((await r.json().catch(()=>({}))).error||'Löschen fehlgeschlagen')}
 async function uploadFile(key,file,status){
- status.textContent='UPLOAD …';status.classList.add('ok');
- const r=await fetch('/api/audio-upload?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream','X-File-Name':encodeURIComponent(file.name||'audio')},body:file});
- const x=await r.json().catch(()=>({}));
- if(!r.ok)throw new Error(x.error||('HTTP '+r.status));
- return x;
+ status.textContent='UPLOAD 0 %';status.classList.add('ok');
+ return upload(`nici40/audio/${key}--${String(file.name||'audio').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(-90)}`,file,{
+  access:'public',
+  handleUploadUrl:'/api/audio-upload',
+  clientPayload:JSON.stringify({key}),
+  multipart:true,
+  onUploadProgress:p=>status.textContent=`UPLOAD ${Math.round(p.percentage)} %`
+ });
 }
 async function render(){
  await refreshServer();list.innerHTML='';

@@ -1,5 +1,6 @@
 const C='https://commons.wikimedia.org/wiki/Special:Redirect/file/';
 export const AUDIO_UPLOADS=[
+ {key:'quiz-bg',era:'GLOBAL',label:'Quiz-Hintergrundmusik',question:'Läuft leise im Hintergrund und wird bei Song-Schnipseln automatisch abgesenkt.',kind:'background'},
  {key:'q01-wham',era:'80er',label:'Wham! – Wake Me Up Before You Go-Go',question:'Wer sang 1984 „Wake Me Up Before You Go-Go“?'},
  {key:'q02-bttf',era:'80er',label:'Back to the Future – Main Theme (Alan Silvestri)',question:'Welcher Film schickte Marty McFly 1985 zurück ins Jahr 1955?'},
  {key:'q03-aha',era:'80er',label:'a-ha – Take on Me',question:'Welches Musikvideo zeigt a-ha in einer Mischung aus Realfilm und Bleistift-Comic?'},
@@ -21,7 +22,8 @@ export const AUDIO_UPLOADS=[
  {key:'q35-miley',era:'2020er',label:'Miley Cyrus – Flowers',question:'Welche Sängerin landete 2023 mit „Flowers“ einen weltweiten Hit?'},
  {key:'q38-bruno',era:'2020er',label:'Encanto – We Don’t Talk About Bruno',question:'Welcher Song aus „Encanto“ wurde 2022 zum überraschenden Chart-Hit?'}
 ];
-const byQ=Object.fromEntries(AUDIO_UPLOADS.map(x=>[x.question,{audioKey:x.key,audioLabel:x.label,cat:'AUDIO'}]));
+const SONG_KEYS=new Set(['q01-wham','q03-aha','q05-madonna','q09-spice','q11-nirvana','q13-bsb','q17-beyonce','q19-rihanna','q22-bep','q25-gangnam','q27-adele','q29-happy','q33-weeknd','q35-miley','q38-bruno']);
+const byQ=Object.fromEntries(AUDIO_UPLOADS.filter(x=>x.kind!=='background').map(x=>[x.question,{audioKey:x.key,audioLabel:x.label,cat:'AUDIO',audioMode:SONG_KEYS.has(x.key)?'songGuess':'teaser'}]));
 export const MEDIA={
  ...byQ,
  'Welcher Film schickte Marty McFly 1985 zurück ins Jahr 1955?':{...byQ['Welcher Film schickte Marty McFly 1985 zurück ins Jahr 1955?'],img:C+'Back_to_the_Future_DeLorean.jpg?width=1200',alt:'DeLorean-Zeitmaschine',credit:'Bild: Wikimedia Commons'},

@@ -13,8 +13,8 @@ async function ensureBackground(){
  try{await backgroundAudio.play()}catch{}
 }
 function randomStart(duration,clip=1){if(!Number.isFinite(duration)||duration<=clip+2)return 0;const lo=Math.min(5,Math.max(0,duration*.08)),hi=Math.max(lo,duration-clip-3);return lo+Math.random()*(hi-lo)}
-async function playTeaser(a,seconds=10){
- await waitMeta(a);a.currentTime=randomStart(a.duration,seconds);if(backgroundAudio)backgroundAudio.volume=.06;
+async function playTeaser(a,seconds=10,startAt=null){
+ await waitMeta(a);const maxStart=Math.max(0,(Number.isFinite(a.duration)?a.duration:seconds)-seconds-.25);const chosen=Number.isFinite(Number(startAt))?Math.min(maxStart,Math.max(0,Number(startAt))):randomStart(a.duration,seconds);a.currentTime=chosen;if(backgroundAudio)backgroundAudio.volume=.06;
  try{await a.play()}catch{return false}
  snippetTimers.push(setTimeout(()=>{a.pause();if(backgroundAudio)backgroundAudio.volume=.22},seconds*1000));return true
 }
@@ -36,7 +36,7 @@ async function enhance(){
  if(seen.has(q))return;seen.add(q);stopAudio();
  if(cfg.img){const f=document.createElement('figure');f.className='questionMedia';f.innerHTML=`<img src="${cfg.img}" alt="${cfg.alt||''}" loading="eager"><figcaption>${cfg.credit||''}</figcaption>`;q.after(f)}
  if(cfg.audioKey){const blob=await getAudio(cfg.audioKey);if(blob&&document.body.contains(q)){const a=new Audio();a.src=URL.createObjectURL(blob);a.dataset.objectUrl=a.src;a.preload='auto';a.volume=.92;a.loop=false;a.className='hostBackgroundAudio';activeAudio=a;
-   const play=()=>cfg.audioMode==='songGuess'?playSongGuess(a):playTeaser(a,10);
+   const play=()=>cfg.audioMode==='songGuess'?playSongGuess(a):playTeaser(a,10,cfg.teaserStart);
    const ok=await play();if(ok===false){const b=document.createElement('button');b.className='audioStart';b.textContent=cfg.audioMode==='songGuess'?'▶ 3 × 1 SEK. STARTEN':'▶ 10 SEK. SOUND STARTEN';b.onclick=async()=>{await ensureBackground();await play();b.remove()};(root.querySelector('.questionMedia')||q).after(b)}
  }}
 }

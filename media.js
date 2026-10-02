@@ -19,10 +19,23 @@ async function playTeaser(a,seconds=10,startAt=null){
  snippetTimers.push(setTimeout(()=>{a.pause();if(backgroundAudio)backgroundAudio.volume=.22},seconds*1000));return true
 }
 async function playSongGuess(a){
- await waitMeta(a);if(backgroundAudio)backgroundAudio.volume=.08;
- const starts=[];for(let i=0;i<3;i++)starts.push(randomStart(a.duration,1));
- const playOne=async i=>{if(i>=starts.length){if(backgroundAudio)backgroundAudio.volume=.22;return}a.currentTime=starts[i];try{await a.play()}catch{return}snippetTimers.push(setTimeout(()=>{a.pause();if(i===starts.length-1){if(backgroundAudio)backgroundAudio.volume=.22}else snippetTimers.push(setTimeout(()=>playOne(i+1),1500))},1000))};
- await playOne(0);return true
+ await waitMeta(a);
+ let stopped=false;
+ const playOne=async()=>{
+   if(stopped||a!==activeAudio)return;
+   a.currentTime=randomStart(a.duration,1);
+   if(backgroundAudio)backgroundAudio.volume=.06;
+   try{await a.play()}catch{return false}
+   snippetTimers.push(setTimeout(()=>{
+     if(a!==activeAudio)return;
+     a.pause();
+     if(backgroundAudio)backgroundAudio.volume=.22;
+     // 3 Sekunden reine Rate-/Quizmusik-Pause, danach neuer zufälliger 1-s-Schnipsel.
+     snippetTimers.push(setTimeout(()=>{if(a===activeAudio)playOne()},3000));
+   },1000));
+   return true;
+ };
+ return await playOne();
 }
 async function enhance(){
  const root=document.querySelector('#hostQuestion');if(!root)return;

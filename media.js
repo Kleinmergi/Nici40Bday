@@ -1,6 +1,6 @@
 import { MEDIA } from './media-config.js';
 const seen=new WeakSet();
-let activeAudio=null, backgroundAudio=null, snippetTimers=[], pendingSong=null, activeQuestionNode=null;
+let activeAudio=null, backgroundAudio=null, snippetTimers=[], pendingSong=null, activeMediaKey=null;
 const dbOpen=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('nici40-media',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('audio'))r.result.createObjectStore('audio')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 async function getAudio(key){try{const db=await dbOpen();return await new Promise((resolve,reject)=>{const r=db.transaction('audio','readonly');const q=r.objectStore('audio').get(key);q.onsuccess=()=>resolve(q.result||null);q.onerror=()=>reject(q.error)})}catch{return null}}
 let remoteLibrary=null,remoteLibraryAt=0;
@@ -18,7 +18,7 @@ const waitUntilQuestionVisible=async q=>{
   return false;
 };
 function clearSnippetTimers(){snippetTimers.forEach(clearTimeout);snippetTimers=[]}
-function stopAudio(){pendingSong=null;activeQuestionNode=null;clearSnippetTimers();if(activeAudio){activeAudio.pause();if(activeAudio.dataset.objectUrl)URL.revokeObjectURL(activeAudio.dataset.objectUrl);activeAudio=null}if(backgroundAudio)backgroundAudio.volume=.22}
+function stopAudio(){pendingSong=null;activeMediaKey=null;clearSnippetTimers();if(activeAudio){activeAudio.pause();if(activeAudio.dataset.objectUrl)URL.revokeObjectURL(activeAudio.dataset.objectUrl);activeAudio=null}if(backgroundAudio)backgroundAudio.volume=.22}
 async function ensureBackground(){
  if(backgroundAudio&&!backgroundAudio.paused)return;
  const source=await audioSource('quiz-bg');if(!source)return;
@@ -35,16 +35,16 @@ async function playSongGuess(a){
  await waitMeta(a);
  let stopped=false;
  const playOne=async()=>{
-   if(stopped||a!==activeAudio||!activeQuestionNode?.isConnected)return;
+   if(stopped||a!==activeAudio)return;
    a.currentTime=randomStart(a.duration,1);
    if(backgroundAudio)backgroundAudio.volume=.06;
    try{await a.play()}catch{return false}
    snippetTimers.push(setTimeout(()=>{
-     if(a!==activeAudio||!activeQuestionNode?.isConnected)return;
+     if(a!==activeAudio)return;
      a.pause();
      if(backgroundAudio)backgroundAudio.volume=.22;
      // 3 Sekunden reine Rate-/Quizmusik-Pause, danach neuer zufälliger 1-s-Schnipsel.
-     snippetTimers.push(setTimeout(()=>{if(a===activeAudio&&activeQuestionNode?.isConnected)playOne()},3000));
+     snippetTimers.push(setTimeout(()=>{if(a===activeAudio)playOne()},3000));
    },1000));
    return true;
  };
@@ -59,7 +59,7 @@ async function enhance(){
  const mediaKey=q.dataset.mediaKey||q.textContent.trim(),cfg=MEDIA[mediaKey];
  if(!cfg)return;
  const eyebrow=root.querySelector('.eyebrow');if(eyebrow&&!eyebrow.querySelector('.catBadge'))eyebrow.insertAdjacentHTML('beforeend',` <span class="catBadge">${cfg.audioMode==='songGuess'?'1s SONG QUIZ':(cfg.cat||'POP')}</span>`);
- if(seen.has(q))return;seen.add(q);stopAudio();activeQuestionNode=q;
+ if(activeMediaKey===mediaKey&&activeAudio)return;if(seen.has(q))return;seen.add(q);stopAudio();activeMediaKey=mediaKey;
  if(cfg.img){const f=document.createElement('figure');f.className='questionMedia';f.innerHTML=`<img src="${cfg.img}" alt="${cfg.alt||''}" loading="eager"><figcaption>${cfg.credit||''}</figcaption>`;q.after(f)}
  if(cfg.audioKey){const source=await audioSource(cfg.audioKey);if(source&&document.body.contains(q)){const visible=await waitUntilQuestionVisible(q);if(!visible||!document.body.contains(q))return;const a=new Audio();a.src=source.src;if(source.objectUrl)a.dataset.objectUrl=a.src;a.preload='auto';a.volume=.92;a.loop=false;a.className='hostBackgroundAudio';activeAudio=a;
    const play=()=>cfg.audioMode==='songGuess'?playSongGuess(a):playTeaser(a,10,cfg.teaserStart);

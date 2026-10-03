@@ -1,5 +1,5 @@
 import { AUDIO_UPLOADS } from './media-config.js';
-import { upload } from 'https://esm.sh/@vercel/blob@2.6.1/client';
+import { upload } from 'https://esm.sh/@vercel/blob@2.8.0/client';
 const list=document.querySelector('#audioList');let serverAudio={};
 const dbOpen=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('nici40-media',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('audio'))r.result.createObjectStore('audio')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 const localGet=async key=>{const db=await dbOpen();return new Promise((resolve,reject)=>{const r=db.transaction('audio','readonly').objectStore('audio').get(key);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})};

@@ -1,5 +1,4 @@
 import { QUIZ } from './quiz-data.js';
-import { MEDIA } from './media-config.js';
 import { TEXT_CONFIG } from './text-config.js';
 import { MEDIA } from './media-config.js';
 const KEY='nici40QuizConfigV1';

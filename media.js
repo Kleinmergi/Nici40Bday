@@ -63,15 +63,15 @@ async function enhance(){
  root.classList.toggle('hostMediaOnly',!!q&&!revealing);
  if(!q){stopAudio();return}
  await ensureBackground();
- const mediaKey=q.dataset.mediaKey||q.textContent.trim(),cfg=MEDIA[mediaKey];const game=window.getQuizState?.();const activeItem=game?.phase==='review'?game.quiz?.[game.reviewIndex]:game?.quiz?.[game.currentIndex];const audioAllowed=activeItem?.audioEnabled!==false;
+ const mediaKey=q.dataset.mediaKey||q.textContent.trim(),cfg=MEDIA[mediaKey];const game=window.getQuizState?.();const activeItem=game?.phase==='review'?game.quiz?.[game.reviewIndex]:game?.quiz?.[game.currentIndex];const audioAllowed=activeItem?.audioEnabled!==false&&activeItem?.audioMode!=='none'&&(activeItem?.audioMode!=='reveal'||revealing);
  if(!cfg)return;
  const eyebrow=root.querySelector('.eyebrow');if(eyebrow&&!eyebrow.querySelector('.catBadge'))eyebrow.insertAdjacentHTML('beforeend',` <span class="catBadge">${cfg.audioMode==='songGuess'?'1s SONG QUIZ':(cfg.cat||'POP')}</span>`);
  if(!audioAllowed&&activeAudio){stopAudio()}if(activeMediaKey===mediaKey&&activeAudio)return;if(seen.has(q))return;seen.add(q);stopAudio();activeMediaKey=mediaKey;
  if(cfg.img){const f=document.createElement('figure');f.className='questionMedia';f.innerHTML=`<img src="${cfg.img}" alt="${cfg.alt||''}" loading="eager"><figcaption>${cfg.credit||''}</figcaption>`;q.after(f);const img=f.querySelector('img');if(!revealing){img.classList.add('pixelReveal');const started=Date.now(),duration=30000;const tick=()=>{if(!document.body.contains(f)||!document.body.contains(q)){clearInterval(interval);return}const progress=Math.min(1,(Date.now()-started)/duration);img.style.filter=`blur(${Math.round(22*(1-progress))}px)`;img.style.transform=`scale(${1.035-.035*progress})`;if(progress>=1)clearInterval(interval)};tick();const interval=setInterval(tick,250)}}
  if(cfg.audioKey&&audioAllowed){const source=await audioSource(cfg.audioKey);if(source&&document.body.contains(q)){const visible=await waitUntilQuestionVisible(q);if(!visible||!document.body.contains(q))return;const a=new Audio();a.src=source.src;if(source.objectUrl)a.dataset.objectUrl=a.src;a.preload='auto';a.volume=.92;a.loop=false;a.className='hostBackgroundAudio';activeAudio=a;
    const play=(mode='snippet')=>mode==='full'?a.play().then(()=>true).catch(()=>false):(cfg.audioMode==='songGuess'?playSongGuess(a):playTeaser(a,10,cfg.teaserStart));
-   if(cfg.audioMode==='songGuess'&&!game?.questionEndsAt){pendingSong=play;return}
-   const ok=await play();if(ok===false){const b=document.createElement('button');b.className='audioStart';b.textContent=cfg.audioMode==='songGuess'?'▶ 3 × 1 SEK. STARTEN':'▶ 10 SEK. SOUND STARTEN';b.onclick=async()=>{await ensureBackground();await play();b.remove()};(root.querySelector('.questionMedia')||q).after(b)}
+   if(cfg.audioMode==='songGuess'&&!revealing&&!game?.questionEndsAt){pendingSong=play;return}
+   const ok=await (activeItem?.audioMode==='reveal'?playTeaser(a,10,cfg.teaserStart):play());if(ok===false){const b=document.createElement('button');b.className='audioStart';b.textContent=cfg.audioMode==='songGuess'?'▶ 3 × 1 SEK. STARTEN':'▶ 10 SEK. SOUND STARTEN';b.onclick=async()=>{await ensureBackground();await play();b.remove()};(root.querySelector('.questionMedia')||q).after(b)}
  }}
 }
 new MutationObserver(enhance).observe(document.body,{childList:true,subtree:true});enhance();

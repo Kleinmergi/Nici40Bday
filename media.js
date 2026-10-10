@@ -19,9 +19,13 @@ const waitUntilQuestionVisible=async q=>{
 };
 function clearSnippetTimers(){snippetTimers.forEach(clearTimeout);snippetTimers=[]}
 function stopAudio(){pendingSong=null;activeMediaKey=null;clearSnippetTimers();if(activeAudio){activeAudio.pause();if(activeAudio.dataset.objectUrl)URL.revokeObjectURL(activeAudio.dataset.objectUrl);activeAudio=null}if(backgroundAudio)backgroundAudio.volume=.22}
+let audioSession=0;
+function stopAllAudio(){audioSession++;stopAudio();if(backgroundAudio){backgroundAudio.pause();backgroundAudio.currentTime=0;if(backgroundAudio.dataset.objectUrl)URL.revokeObjectURL(backgroundAudio.dataset.objectUrl);backgroundAudio=null}}
+window.addEventListener('nici40-stop-audio',stopAllAudio);
 async function ensureBackground(){
+ const session=audioSession;
  if(backgroundAudio&&!backgroundAudio.paused)return;
- const source=await audioSource('quiz-bg');if(!source)return;
+ const source=await audioSource('quiz-bg');if(!source)return;if(session!==audioSession){if(source.objectUrl)URL.revokeObjectURL(source.src);return;}
  if(!backgroundAudio){const a=new Audio();a.src=source.src;if(source.objectUrl)a.dataset.objectUrl=a.src;a.loop=true;a.preload='auto';a.volume=.22;backgroundAudio=a}
  try{await backgroundAudio.play()}catch{}
 }
@@ -51,6 +55,7 @@ async function playSongGuess(a){
  return await playOne();
 }
 async function enhance(){
+ if(!window.getQuizState?.()||document.querySelector('#home:not(.hidden)')){stopAllAudio();return}
  const root=document.querySelector('#hostQuestion');if(!root)return;
  const q=root.querySelector('.question'),revealing=!!root.querySelector('.reviewCount,.opt.correct');
  root.classList.toggle('hostMediaOnly',!!q&&!revealing);

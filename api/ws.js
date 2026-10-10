@@ -3,7 +3,7 @@ import { WebSocketServer } from 'ws';
 import { QUIZ } from '../quiz-data.js';
 import { TEXT_CONFIG } from '../text-config.js';
 
-const DEFAULT_QUIZ=QUIZ.flatMap((round,ri)=>round.items.map((item,qi)=>({id:`${ri}-${qi}`,roundIndex:ri,questionIndex:qi,roundName:round.name,theme:round.theme,originalQ:item.q,q:item.q,cat:item.cat||'POP',options:[...item.o],answerIndex:item.a,explanation:item.e||'',answerMode:TEXT_CONFIG[item.q]?'open':'mc',canonical:TEXT_CONFIG[item.q]?.canonical||item.o[item.a],accept:TEXT_CONFIG[item.q]?.accept||[item.o[item.a]]})));
+const DEFAULT_QUIZ=QUIZ.flatMap((round,ri)=>round.items.map((item,qi)=>({id:`${ri}-${qi}`,roundIndex:ri,questionIndex:qi,roundName:round.name,theme:round.theme,originalQ:item.q,q:item.q,playAudio:true,cat:item.cat||'POP',options:[...item.o],answerIndex:item.a,explanation:item.e||'',answerMode:TEXT_CONFIG[item.q]?'open':'mc',canonical:TEXT_CONFIG[item.q]?.canonical||item.o[item.a],accept:TEXT_CONFIG[item.q]?.accept||[item.o[item.a]]})));
 const rooms=globalThis.__partyQuizRooms??new Map();globalThis.__partyQuizRooms=rooms;
 const DEFAULT_QUESTION_MS=180000;
 function code(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<5;i++)o+=a[Math.floor(Math.random()*a.length)];return o}

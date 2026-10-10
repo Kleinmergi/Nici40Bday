@@ -69,11 +69,11 @@ async function enhance(){
  if(!audioAllowed&&activeAudio){stopAudio()}if(activeMediaKey===mediaKey&&activeAudio)return;if(seen.has(q))return;seen.add(q);stopAudio();activeMediaKey=mediaKey;
  if(cfg.img){const f=document.createElement('figure');f.className='questionMedia';f.innerHTML=`<img src="${cfg.img}" alt="${cfg.alt||''}" loading="eager"><figcaption>${cfg.credit||''}</figcaption>`;q.after(f)}
  if(cfg.audioKey&&audioAllowed){const source=await audioSource(cfg.audioKey);if(source&&document.body.contains(q)){const visible=await waitUntilQuestionVisible(q);if(!visible||!document.body.contains(q))return;const a=new Audio();a.src=source.src;if(source.objectUrl)a.dataset.objectUrl=a.src;a.preload='auto';a.volume=.92;a.loop=false;a.className='hostBackgroundAudio';activeAudio=a;
-   const play=()=>cfg.audioMode==='songGuess'?playSongGuess(a):playTeaser(a,10,cfg.teaserStart);
+   const play=(mode='snippet')=>mode==='full'?a.play().then(()=>true).catch(()=>false):(cfg.audioMode==='songGuess'?playSongGuess(a):playTeaser(a,10,cfg.teaserStart));
    if(cfg.audioMode==='songGuess'&&!game?.questionEndsAt){pendingSong=play;return}
    const ok=await play();if(ok===false){const b=document.createElement('button');b.className='audioStart';b.textContent=cfg.audioMode==='songGuess'?'▶ 3 × 1 SEK. STARTEN':'▶ 10 SEK. SOUND STARTEN';b.onclick=async()=>{await ensureBackground();await play();b.remove()};(root.querySelector('.questionMedia')||q).after(b)}
  }}
 }
 new MutationObserver(enhance).observe(document.body,{childList:true,subtree:true});enhance();
 
-window.addEventListener('nici40-start-song',async()=>{if(!pendingSong)return;const play=pendingSong;pendingSong=null;await ensureBackground();const ok=await play();if(ok!==false&&typeof window.send==='function')window.send('activateQuestion')});
+window.addEventListener('nici40-start-song',async e=>{if(!pendingSong)return;const play=pendingSong;pendingSong=null;const session=audioSession;await ensureBackground();if(session!==audioSession)return;const ok=await play(e.detail?.mode||'snippet');if(ok!==false&&typeof window.send==='function')window.send('activateQuestion')});

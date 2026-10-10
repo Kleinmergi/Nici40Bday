@@ -22,6 +22,7 @@ function stopAudio(){pendingSong=null;activeMediaKey=null;clearSnippetTimers();i
 let audioSession=0;
 function stopAllAudio(){audioSession++;stopAudio();if(backgroundAudio){backgroundAudio.pause();backgroundAudio.currentTime=0;if(backgroundAudio.dataset.objectUrl)URL.revokeObjectURL(backgroundAudio.dataset.objectUrl);backgroundAudio=null}}
 window.addEventListener('nici40-stop-audio',stopAllAudio);
+window.addEventListener('nici40-stop-song',()=>{audioSession++;stopAudio()});
 async function ensureBackground(){
  const session=audioSession;
  if(backgroundAudio&&!backgroundAudio.paused)return;
@@ -55,6 +56,7 @@ async function playSongGuess(a){
  return await playOne();
 }
 async function enhance(){
+ if(document.querySelector('#home:not(.hidden)')&&!window.getQuizState?.())return;
  if(!window.getQuizState?.()||document.querySelector('#home:not(.hidden)')){stopAllAudio();return}
  const root=document.querySelector('#hostQuestion');if(!root)return;
  const q=root.querySelector('.question'),revealing=!!root.querySelector('.reviewCount,.opt.correct');

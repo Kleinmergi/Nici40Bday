@@ -52,6 +52,7 @@ wss.on('connection',ws=>{ws.meta={room:null,playerId:null,role:null};ws.on('mess
  if(ws.meta.role!=='host'&&ws.meta.role!=='remote')return;
  if(m.type==='pause'&&r.phase==='playing'){clearTimer(r);r.paused=true;r.pauseRemaining=r.questionEndsAt?Math.max(0,r.questionEndsAt-Date.now()):null;r.questionEndsAt=null;return broadcast(r)}
  if(m.type==='resume'&&r.phase==='playing'&&r.paused){r.paused=false;if(r.pauseRemaining!=null){r.questionStartedAt=Date.now()-(r.questionMs-r.pauseRemaining);r.questionEndsAt=Date.now()+r.pauseRemaining;r.timer=setTimeout(()=>nextPubQuestion(r),r.pauseRemaining+50)}r.pauseRemaining=null;return broadcast(r)}
+ if(m.type==='remoteStartSong'&&ws.meta.role==='remote'&&r.mode==='pub'&&r.phase==='playing'&&!r.paused&&!r.questionEndsAt){if(r.hostSocket?.readyState===1){send(r.hostSocket,'remoteStartSong',{index:r.currentIndex});return}return send(ws,'error',{message:'Tablet nicht verbunden. Song kann dort nicht gestartet werden.'})}
  if(m.type==='activateQuestion'&&ws.meta.role==='host'&&r.mode==='pub'&&r.phase==='playing'&&!r.paused){if(activatePubQuestion(r))return broadcast(r);return}
  if(m.type==='pubNext'&&r.mode==='pub'&&r.phase==='playing')return nextPubQuestion(r);
  if(m.type==='reviewNext'&&r.mode==='pub'&&r.phase==='review'){if(r.reviewIndex<r.quiz.length-1){r.reviewIndex++;return broadcast(r)}r.phase='finished';return broadcast(r)}

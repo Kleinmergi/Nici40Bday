@@ -37,3 +37,5 @@ body.presentationMode #hostQuestion.stage::before{display:none}
 body.presentationMode #hostQuestion .reviewCount{font-size:clamp(12px,2dvh,18px)}
 @media(max-width:760px){body.presentationMode #hostQuestion .opts{grid-template-columns:1fr}body.presentationMode #hostQuestion .opt{padding:6px 9px}}
 @media(max-height:600px){body.presentationMode #hostQuestion{padding:7px 14px}body.presentationMode #hostQuestion .question{font-size:clamp(17px,3.4dvh,30px)}body.presentationMode #hostQuestion .questionMedia img{max-height:22dvh}body.presentationMode #hostQuestion .opt{padding:5px 8px}}
+
+body.presentationMode #exitPresentation{display:block!important;position:fixed;top:10px;right:12px;z-index:9999;padding:10px 15px;border-radius:10px;background:#e92d68;color:white;border:2px solid white;font-size:13px;font-weight:900;box-shadow:0 3px 14px #0009;opacity:.9}body.presentationMode #exitPresentation:focus,body.presentationMode #exitPresentation:hover{opacity:1}body.presentationMode .hostDisplayActions{display:none!important}

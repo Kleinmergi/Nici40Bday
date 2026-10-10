@@ -5,7 +5,7 @@ const dbOpen=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('nici40-m
 async function getAudio(key){try{const db=await dbOpen();return await new Promise((resolve,reject)=>{const r=db.transaction('audio','readonly');const q=r.objectStore('audio').get(key);q.onsuccess=()=>resolve(q.result||null);q.onerror=()=>reject(q.error)})}catch{return null}}
 let remoteLibrary=null,remoteLibraryAt=0;
 async function getRemoteUrl(key){try{if(!remoteLibrary||Date.now()-remoteLibraryAt>30000){const r=await fetch('/api/audio-library',{cache:'no-store'});const x=await r.json();remoteLibrary=x.audio||{};remoteLibraryAt=Date.now()}return remoteLibrary[key]?.url||null}catch{return null}}
-async function audioSource(key){const remote=await getRemoteUrl(key);if(remote)return{src:remote,objectUrl:false};const local=await getAudio(key);if(!local)return null;return{src:URL.createObjectURL(local),objectUrl:true}}
+async function audioSource(key){const local=await getAudio(key);if(local)return{src:URL.createObjectURL(local),objectUrl:true};const remote=await getRemoteUrl(key);return remote?{src:remote,objectUrl:false}:null}
 const waitMeta=a=>a.readyState>=1?Promise.resolve():new Promise(res=>{a.addEventListener('loadedmetadata',res,{once:true});setTimeout(res,2500)});
 const waitUntilQuestionVisible=async q=>{
   // Era transition sits above the already-rendered next question for ~2.6 s.
@@ -56,14 +56,14 @@ async function enhance(){
  root.classList.toggle('hostMediaOnly',!!q&&!revealing);
  if(!q){stopAudio();return}
  await ensureBackground();
- const mediaKey=q.dataset.mediaKey||q.textContent.trim(),cfg=MEDIA[mediaKey];
+ const mediaKey=q.dataset.mediaKey||q.textContent.trim(),cfg=MEDIA[mediaKey];const game=window.getQuizState?.();const activeItem=game?.phase==='review'?game.quiz?.[game.reviewIndex]:game?.quiz?.[game.currentIndex];const audioAllowed=activeItem?.audioEnabled!==false;
  if(!cfg)return;
  const eyebrow=root.querySelector('.eyebrow');if(eyebrow&&!eyebrow.querySelector('.catBadge'))eyebrow.insertAdjacentHTML('beforeend',` <span class="catBadge">${cfg.audioMode==='songGuess'?'1s SONG QUIZ':(cfg.cat||'POP')}</span>`);
- if(activeMediaKey===mediaKey&&activeAudio)return;if(seen.has(q))return;seen.add(q);stopAudio();activeMediaKey=mediaKey;
+ if(!audioAllowed&&activeAudio){stopAudio()}if(activeMediaKey===mediaKey&&activeAudio)return;if(seen.has(q))return;seen.add(q);stopAudio();activeMediaKey=mediaKey;
  if(cfg.img){const f=document.createElement('figure');f.className='questionMedia';f.innerHTML=`<img src="${cfg.img}" alt="${cfg.alt||''}" loading="eager"><figcaption>${cfg.credit||''}</figcaption>`;q.after(f)}
- if(cfg.audioKey){const source=await audioSource(cfg.audioKey);if(source&&document.body.contains(q)){const visible=await waitUntilQuestionVisible(q);if(!visible||!document.body.contains(q))return;const a=new Audio();a.src=source.src;if(source.objectUrl)a.dataset.objectUrl=a.src;a.preload='auto';a.volume=.92;a.loop=false;a.className='hostBackgroundAudio';activeAudio=a;
+ if(cfg.audioKey&&audioAllowed){const source=await audioSource(cfg.audioKey);if(source&&document.body.contains(q)){const visible=await waitUntilQuestionVisible(q);if(!visible||!document.body.contains(q))return;const a=new Audio();a.src=source.src;if(source.objectUrl)a.dataset.objectUrl=a.src;a.preload='auto';a.volume=.92;a.loop=false;a.className='hostBackgroundAudio';activeAudio=a;
    const play=()=>cfg.audioMode==='songGuess'?playSongGuess(a):playTeaser(a,10,cfg.teaserStart);
-   if(cfg.audioMode==='songGuess'&&!window.state?.questionEndsAt){pendingSong=play;return}
+   if(cfg.audioMode==='songGuess'&&!game?.questionEndsAt){pendingSong=play;return}
    const ok=await play();if(ok===false){const b=document.createElement('button');b.className='audioStart';b.textContent=cfg.audioMode==='songGuess'?'▶ 3 × 1 SEK. STARTEN':'▶ 10 SEK. SOUND STARTEN';b.onclick=async()=>{await ensureBackground();await play();b.remove()};(root.querySelector('.questionMedia')||q).after(b)}
  }}
 }
